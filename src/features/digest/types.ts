@@ -1,0 +1,1 @@
+export type { DigestSummary } from "@/types/digest"
