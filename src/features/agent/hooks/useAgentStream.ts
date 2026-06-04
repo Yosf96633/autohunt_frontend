@@ -43,7 +43,7 @@ export function useAgentStream() {
     setThreadId("")
   }, [])
 
-  const startRun = useCallback(async (formData: SetupFormData, mock = true) => {
+  const startRun = useCallback(async (formData: SetupFormData, mock = false) => {
     const newThreadId = uuidv4()
     setThreadId(newThreadId)
     setState(INITIAL_STATE)
