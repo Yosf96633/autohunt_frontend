@@ -1,5 +1,6 @@
 import React from "react"
-import { Crosshair } from "lucide-react"
+import Link from "next/link"
+import { Crosshair, History } from "lucide-react"
 
 export function Header() {
   return (
@@ -11,8 +12,15 @@ export function Header() {
         <span className="font-mono text-sm font-semibold tracking-widest text-white/90 uppercase">
           AutoHunt
         </span>
-        <span className="ml-auto font-mono text-xs text-white/30 tracking-wider">
-          AI Job Agent
+        <span className="ml-auto flex items-center gap-4">
+          <Link
+            href="/threads"
+            className="flex items-center gap-1.5 font-mono text-xs text-white/30 hover:text-white/70 transition-colors"
+          >
+            <History className="w-3.5 h-3.5" />
+            History
+          </Link>
+          <span className="font-mono text-xs text-white/20 tracking-wider">AI Job Agent</span>
         </span>
       </div>
     </header>

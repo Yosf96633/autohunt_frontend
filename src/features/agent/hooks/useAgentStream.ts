@@ -17,6 +17,21 @@ const INITIAL_STATE: AgentStreamState = {
 
 const INTERNAL_NODES = new Set(["__start__", "__end__", "RunnableLambda", "LangGraph"])
 
+const THREADS_KEY = "autohunt_threads"
+
+function saveThreadToStorage(threadId: string) {
+  try {
+    const raw = localStorage.getItem(THREADS_KEY)
+    const existing = raw ? JSON.parse(raw) : []
+    const alreadyExists = existing.find((t: { id: string }) => t.id === threadId)
+    if (alreadyExists) return
+    const updated = [{ id: threadId, createdAt: new Date().toISOString() }, ...existing]
+    localStorage.setItem(THREADS_KEY, JSON.stringify(updated))
+  } catch {
+    // localStorage unavailable — silently skip
+  }
+}
+
 export function useAgentStream() {
   const [state, setState] = useState<AgentStreamState>(INITIAL_STATE)
   const [status, setStatus] = useState<RunStatus>("idle")
@@ -28,15 +43,14 @@ export function useAgentStream() {
     setThreadId("")
   }, [])
 
-  const startRun = useCallback(async (formData: SetupFormData, mock = false) => {
+  const startRun = useCallback(async (formData: SetupFormData, mock = true) => {
     const newThreadId = uuidv4()
     setThreadId(newThreadId)
     setState(INITIAL_STATE)
     setStatus("running")
 
-    const existing = JSON.parse(localStorage.getItem("autohunt_thread_ids") ?? "[]")
-    existing.push(newThreadId)
-    localStorage.setItem("autohunt_thread_ids", JSON.stringify(existing))
+    // ← Save thread to localStorage before request
+    saveThreadToStorage(newThreadId)
 
     const fd = new FormData()
     fd.append("cv", formData.cv as File)
@@ -77,7 +91,6 @@ export function useAgentStream() {
     }
   }, [])
 
-  // expose setStatus so dashboard can pass it to useResumeAgent
   return { state, status, setStatus, threadId, startRun, reset }
 }
 
